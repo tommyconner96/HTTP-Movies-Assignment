@@ -2,45 +2,42 @@ import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import {useHistory, useParams} from 'react-router-dom'
 
-const initialState = {
-    id: '',
-    title: '',
-    director: '',
-    metascore: '',
-    stars: ''
-}
-
 const UpdateMovie = (props) => {
-    const [form, setForm] = useState(initialState)
+    // const initialState = {
+    //     id: { id },
+    //     title: '',
+    //     director: '',
+    //     metascore: '',
+    //     stars: []
+    // }
+    
+    const [form, setForm] = useState({
+        // id: Date.now(),
+        title: '',
+        director: '',
+        metascore: '',
+        stars: []
+    })
     const  {history}  = useHistory()
-    const params = useParams()
-
-    useEffect(() => {
-        axios
-            .get(`http://localhost:5000/api/movies/${params.id}`)
-            .then(res => {
-                setForm(res.data)
-            })
-            .catch(err => console.log(err))
-    },[params.id])
+    const { id } = useParams()
 
     const handleChange = (e) => {
         e.preventDefault()
         setForm ({
             ...form, [e.target.name]: e.target.value
         })
+
     }
 
     const handleSubmit = (e) => {
         e.preventDefault()
         axios
-            .put(`http://localhost:5000/api/movies/${props.movie.id}`, form)
+            .put(`http://localhost:5000/api/movies/${id}`, form)
             .then(res => {
                 console.log(res)
-                props.setMovieList([...props.movieList, res.data])
-                history('/movies')
             })
             .catch(err => console.log(err))
+            // history('/')
     }
     return(
         <form onSubmit={handleSubmit}>
@@ -65,7 +62,7 @@ const UpdateMovie = (props) => {
                 onChange={handleChange}
                 value={form.metascore}
             />
-            <textarea
+            <input
                 type='text'
                 name='stars'
                 placeholder='stars'
