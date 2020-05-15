@@ -16,10 +16,23 @@ const UpdateMovie = (props) => {
         title: '',
         director: '',
         metascore: '',
-        stars: []
+        stars: ['']
     })
-    const  {history}  = useHistory()
+    const  history  = useHistory()
     const { id } = useParams()
+
+    useEffect(() => {
+        axios.get(`http://localhost:5000/api/movies/${id}`)
+            .then(res => {
+                res.data = {
+                    ...res.data,
+                    stars: res.data.stars.toString()
+            }
+            setForm(res.data)
+        })
+        .catch(err => {console.log(err)
+        })
+    }, [id])
 
     const handleChange = (e) => {
         e.preventDefault()
@@ -31,13 +44,21 @@ const UpdateMovie = (props) => {
 
     const handleSubmit = (e) => {
         e.preventDefault()
+        form.stars = form.stars.split(',')
         axios
             .put(`http://localhost:5000/api/movies/${id}`, form)
             .then(res => {
                 console.log(res)
+                setForm({
+                    id: "",
+                title: "",
+                director: "",
+                metascore: "",
+                stars: [] 
+                })
             })
             .catch(err => console.log(err))
-            // history('/')
+            history.push('/')
     }
     return(
         <form onSubmit={handleSubmit}>
@@ -62,7 +83,7 @@ const UpdateMovie = (props) => {
                 onChange={handleChange}
                 value={form.metascore}
             />
-            <input
+            <textarea
                 type='text'
                 name='stars'
                 placeholder='stars'
